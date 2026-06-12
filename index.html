@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adfn Peinture - L'art au service de vos murs</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { 
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6; color: #2c2c2c;
+    background: #faf8f3; overflow-x: hidden;
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><text y='20' font-size='20'>🎨</text></svg>") 12 12, auto;
+  }
+  
+  h1, h2, h3 { font-family: 'Caveat', cursive; font-weight: 700; }
+  
+  /* === CURSEUR PEINTURE === */
+  .cursor-paint {
+    position: fixed; width: 20px; height: 20px;
+    border-radius: 50%; pointer-events: none;
+    z-index: 9999; mix-blend-mode: multiply;
+    transition: transform 0.1s;
+  }
+  
+  /* === HEADER === */
+  header {
+    position: fixed; top: 0; width: 100%;
+    background: rgba(250, 248, 243, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 1000; transition: all 0.3s;
+  }
+  nav {
+    max-width: 1300px; margin: auto;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 2rem;
+  }
+  .logo {
+    font-family: 'Caveat', cursive;
+    font-size: 2.2rem; font-weight: 700;
+    color: #2c2c2c; position: relative;
+    display: inline-block;
+  }
+  .logo .brush {
+    display: inline-block; transform-origin: bottom right;
+    animation: brushWiggle 3s ease-in-out infinite;
+  }
+  @keyframes brushWiggle {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-15deg); }
+  }
+  .logo::after {
+    content: ''; position: absolute;
+    bottom: -5px; left: 0; width: 100%; height: 8px;
+    background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+    border-radius: 50%; opacity: 0.6;
+    animation: paintWave 3s ease-in-out infinite;
+  }
+  @keyframes paintWave {
+    0%, 100% { transform: scaleX(1) rotate(0deg); }
+    50% { transform: scaleX(1.1) rotate(-1deg); }
+  }
+  
+  .nav-links { display: flex; list-style: none; gap: 2rem; align-items: center; }
+  .nav-links a {
+    text-decoration: none; color: #2c2c2c;
+    font-weight: 500; position: relative;
+    transition: color 0.3s;
+  }
+  .nav-links a:not(.btn-paint)::after {
+    content: ''; position: absolute;
+    bottom: -5px; left: 50%; width: 0; height: 3px;
+    background: #ff6b6b; transition: all 0.3s;
+    transform: translateX(-50%); border-radius: 2px;
+  }
+  .nav-links a:hover::after { width: 100%; }
+  
+  /* Bouton coup de pinceau */
+  .btn-paint {
+    background: #2c2c2c; color: white !important;
+    padding: 0.7rem 1.5rem; border-radius: 30px;
+    position: relative; overflow: hidden;
+    transition: all 0.3s;
+    animation: pulsePhone 2s infinite;
+  }
+  @keyframes pulsePhone {
+    0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(255, 107, 107, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+  }
+  .btn-paint::before {
+    content: ''; position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+    transition: left 0.5s; z-index: -1;
+  }
+  .btn-paint:hover::before { left: 0; }
+  .btn-paint:hover { transform: scale(1.1) rotate(-2deg); }
+  
+  .menu-toggle {
+    display: none; background: none; border: none;
+    font-size: 1.8rem; cursor: pointer; color: #2c2c2c;
+  }
+  
+  /* === PARTICULES PEINTURE === */
+  .paint-particles {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 1;
+  }
+  .particle {
+    position: absolute; border-radius: 50%;
+    animation: particleFloat linear infinite;
+    opacity: 0.4;
+  }
+  @keyframes particleFloat {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.4; }
+    90% { opacity: 0.4; }
+    100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+  }
+  
+  /* === HERO === */
+  .hero {
+    min-height: 100vh; position: relative;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 0 2rem; padding-top: 100px;
+    background: radial-gradient(ellipse at top, #fff5e1 0%, #faf8f3 70%);
+    overflow: hidden;
+  }
+  
+  /* Bulles de peinture flottantes */
+  .paint-blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(40px); opacity: 0.4;
+    animation: float 20s infinite ease-in-out;
+  }
+  .blob1 { width: 400px; height: 400px; background: #ff6b6b; top: -100px; left: -100px; animation-delay: 0s; }
+  .blob2 { width: 300px; height: 300px; background: #feca57; top: 50%; right: -50px; animation-delay: -5s; }
+  .blob3 { width: 350px; height: 350px; background: #48dbfb; bottom: -100px; left: 30%; animation-delay: -10s; }
+  .blob4 { width: 250px; height: 250px; background: #ff9ff3; top: 20%; right: 30%; animation-delay: -15s; }
+  
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(100px, -50px) scale(1.1); }
+    50% { transform: translate(-50px, 100px) scale(0.9); }
+    75% { transform: translate(50px, 50px) scale(1.05); }
+  }
+  
+  .hero-content { position: relative; z-index: 2; max-width: 900px; }
+  .hero h1 {
+    font-size: 6rem; line-height: 1.1;
+    color: #2c2c2c; margin-bottom: 1.5rem;
+    animation: titleDrop 1.2s ease-out;
+  }
+  @keyframes titleDrop {
+    0% { opacity: 0; transform: translateY(-50px) rotate(-5deg); }
+    60% { transform: translateY(10px) rotate(2deg); }
+    100% { opacity: 1; transform: translateY(0) rotate(0); }
+  }
+  
+  .hero h1 .highlight {
+    position: relative; display: inline-block;
+    color: #ff6b6b; animation: colorShift 5s infinite;
+  }
+  @keyframes colorShift {
+    0%, 100% { color: #ff6b6b; }
+    25% { color: #feca57; }
+    50% { color: #48dbfb; }
+    75% { color: #ff9ff3; }
+  }
+  .hero h1 .highlight::after {
+    content: ''; position: absolute;
+    bottom: 10px; left: -5%; width: 110%; height: 20px;
+    background: #feca57; z-index: -1;
+    transform: skew(-5deg) rotate(-2deg);
+    animation: brushStroke 2s ease-out 0.5s both;
+  }
+  @keyframes brushStroke {
+    from { width: 0; left: 50%; }
+    to { width: 110%; left: -5%; }
+  }
+  
+  .hero .subtitle {
+    font-size: 1.4rem; color: #555;
+    margin-bottom: 2.5rem; font-weight: 300;
+    animation: fadeUp 1s ease-out 0.3s both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .hero-info {
+    display: flex; justify-content: center;
+    gap: 2rem; flex-wrap: wrap; margin-bottom: 2.5rem;
+  }
+  .info-card {
+    background: white; padding: 1rem 1.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    display: flex; align-items: center; gap: 0.8rem;
+    transform: rotate(-1deg);
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    animation: cardBounce 0.8s ease-out both;
+  }
+  .info-card:nth-child(1) { animation-delay: 0.5s; }
+  .info-card:nth-child(2) { transform: rotate(1deg); animation-delay: 0.7s; }
+  .info-card:nth-child(3) { transform: rotate(-0.5deg); animation-delay: 0.9s; }
+  @keyframes cardBounce {
+    0% { opacity: 0; transform: scale(0) rotate(-180deg); }
+    60% { transform: scale(1.1) rotate(10deg); }
+    100% { opacity: 1; transform: scale(1) rotate(-1deg); }
+  }
+  .info-card:nth-child(2) { animation-name: cardBounce2; }
+  @keyframes cardBounce2 {
+    0% { opacity: 0; transform: scale(0) rotate(180deg); }
+    60% { transform: scale(1.1) rotate(-10deg); }
+    100% { opacity: 1; transform: scale(1) rotate(1deg); }
+  }
+  .info-card:nth-child(3) { animation-name: cardBounce3; }
+  @keyframes cardBounce3 {
+    0% { opacity: 0; transform: scale(0) rotate(-180deg); }
+    60% { transform: scale(1.1) rotate(10deg); }
+    100% { opacity: 1; transform: scale(1) rotate(-0.5deg); }
+  }
+  
+  .info-card:hover { 
+    transform: rotate(0) scale(1.1) translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  }
+  .info-card .icon { 
+    font-size: 1.5rem;
+    animation: iconBounce 2s infinite;
+    display: inline-block;
+  }
+  .info-card:nth-child(2) .icon { animation-delay: 0.3s; }
+  .info-card:nth-child(3) .icon { animation-delay: 0.6s; }
+  @keyframes iconBounce {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    50% { transform: translateY(-5px) rotate(10deg); }
+  }
+  .info-card .text { font-size: 0.9rem; }
+  .info-card .text strong { display: block; color: #2c2c2c; }
+  
+  .hero-buttons { 
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    animation: fadeUp 1s ease-out 1.1s both;
+  }
+  
+  /* Boutons artistiques */
+  .btn-art {
+    padding: 1.2rem 2.5rem; border-radius: 50px;
+    text-decoration: none; font-weight: 600;
+    transition: all 0.3s; position: relative;
+    overflow: hidden; display: inline-block;
+    font-size: 1rem; border: none; cursor: pointer;
+  }
+  .btn-art.primary {
+    background: #2c2c2c; color: white;
+    box-shadow: 0 10px 30px rgba(44,44,44,0.3);
+  }
+  .btn-art.primary::before {
+    content: ''; position: absolute;
+    top: 50%; left: 50%; width: 0; height: 0;
+    background: radial-gradient(circle, #ff6b6b, #feca57);
+    border-radius: 50%; transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s; z-index: 0;
+  }
+  .btn-art.primary:hover::before { width: 400px; height: 400px; }
+  .btn-art.primary:hover { transform: translateY(-5px) scale(1.05); }
+  .btn-art.primary span { position: relative; z-index: 1; }
+  
+  .btn-art.outline {
+    background: transparent; color: #2c2c2c;
+    border: 2px solid #2c2c2c;
+  }
+  .btn-art.outline:hover { background: #2c2c2c; color: white; transform: translateY(-5px) scale(1.05); }
+  
+  /* === SECTIONS === */
+  section { padding: 6rem 2rem; position: relative; }
+  .container { max-width: 1200px; margin: auto; }
+  .section-title {
+    text-align: center; font-size: 4.5rem;
+    color: #2c2c2c; margin-bottom: 0.5rem;
+    line-height: 1;
+  }
+  .section-title .accent { 
+    color: #ff6b6b; 
+    display: inline-block;
+    animation: wiggle 2s ease-in-out infinite;
+  }
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-3deg); }
+    75% { transform: rotate(3deg); }
+  }
+  .section-subtitle {
+    text-align: center; color: #888;
+    font-size: 1.2rem; margin-bottom: 4rem;
+    font-weight: 300;
+  }
+  
+  /* === SERVICES === */
+  .services { background: white; position: relative; }
+  .services::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 100px;
+    background: #faf8f3;
+    clip-path: polygon(0 0, 100% 0, 100% 50%, 0 100%);
+  }
+  
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+  .service-card {
+    background: #faf8f3; padding: 2.5rem 2rem;
+    border-radius: 30px; text-align: center;
+    transition: all 0.4s; position: relative;
+    overflow: hidden;
+  }
+  .service-card::before {
+    content: ''; position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: conic-gradient(from 0deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #ff6b6b);
+    opacity: 0; transition: opacity 0.4s; animation: rotate 4s linear infinite;
+  }
+  @keyframes rotate { to { transform: rotate(360deg); } }
+  .service-card:hover::before { opacity: 0.1; }
+  .service-card:hover { 
+    transform: translateY(-15px) rotate(-2deg) scale(1.02);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  }
+  .service-card > * { position: relative; z-index: 1; }
+  
+  .service-emoji {
+    font-size: 4rem; margin-bottom: 1rem;
+    display: inline-block;
+    transition: transform 0.4s;
+    animation: floatEmoji 3s ease-in-out infinite;
+  }
+  .service-card:nth-child(2) .service-emoji { animation-delay: 0.3s; }
+  .service-card:nth-child(3) .service-emoji { animation-delay: 0.6s; }
+  .service-card:nth-child(4) .service-emoji { animation-delay: 0.9s; }
+  .service-card:nth-child(5) .service-emoji { animation-delay: 1.2s; }
+  .service-card:nth-child(6) .service-emoji { animation-delay: 1.5s; }
+  @keyframes floatEmoji {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    50% { transform: translateY(-10px) rotate(5deg); }
+  }
+  .service-card:hover .service-emoji { 
+    transform: scale(1.3) rotate(15deg); 
+    animation: shake 0.5s;
+  }
+  @keyframes shake {
+    0%, 100% { transform: scale(1.3) rotate(15deg); }
+    25% { transform: scale(1.3) rotate(-15deg) translateX(-5px); }
+    75% { transform: scale(1.3) rotate(15deg) translateX(5px); }
+  }
+  .service-card h3 {
+    font-size: 2rem; color: #2c2c2c; margin-bottom: 0.8rem;
+  }
+  .service-card p { color: #666; }
+  
+  /* === COLOR PICKER === */
+  .color-section { 
+    background: linear-gradient(135deg, #fff5e1, #fde2e2);
+    text-align: center;
+  }
+  .color-wheel {
+    width: 250px; height: 250px;
+    border-radius: 50%;
+    background: conic-gradient(
+      #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff, #5f27cd, #ff6b6b
+    );
+    margin: 0 auto 2rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    animation: rotate 20s linear infinite;
+    cursor: pointer;
+    transition: transform 0.3s;
+    position: relative;
+  }
+  .color-wheel::after {
+    content: '🎨'; position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    background: white; width: 80px; height: 80px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  }
+  .color-wheel:hover { 
+    transform: scale(1.1); 
+    animation-play-state: paused;
+  }
+  .color-quote {
+    font-family: 'Caveat', cursive;
+    font-size: 2.5rem; color: #2c2c2c;
+    max-width: 600px; margin: 0 auto;
+    line-height: 1.3;
+  }
+  .color-quote::before, .color-quote::after {
+    content: '"'; color: #ff6b6b; font-size: 3rem;
+    animation: quoteWiggle 2s ease-in-out infinite;
+    display: inline-block;
+  }
+  @keyframes quoteWiggle {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(10deg); }
+  }
+  
+  /* === À PROPOS === */
+  .about { background: white; }
+  .about-content {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 4rem; align-items: center;
+  }
+  .about-visual {
+    position: relative; height: 450px;
+  }
+  .paint-canvas {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: white;
+    border-radius: 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    overflow: hidden;
+  }
+  .paint-canvas::before, .paint-canvas::after {
+    content: ''; position: absolute;
+    border-radius: 50%; mix-blend-mode: multiply;
+  }
+  .paint-canvas::before {
+    width: 60%; height: 60%;
+    background: #ff6b6b;
+    top: 10%; left: 10%;
+    animation: blobMove 8s ease-in-out infinite;
+  }
+  .paint-canvas::after {
+    width: 50%; height: 50%;
+    background: #feca57;
+    bottom: 15%; right: 10%;
+    animation: blobMove 10s ease-in-out infinite reverse;
+  }
+  @keyframes blobMove {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(30px,-20px) scale(1.1); }
+    66% { transform: translate(-20px,30px) scale(0.95); }
+  }
+  
+  .about-text h2 {
+    font-size: 4rem; color: #2c2c2c; margin-bottom: 1.5rem;
+  }
+  .about-text h2 span { 
+    color: #ff6b6b;
+    display: inline-block;
+    animation: heartBeat 1.5s ease-in-out infinite;
+  }
+  @keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.1); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.05); }
+  }
+  .about-text p { color: #555; margin-bottom: 1rem; font-size: 1.05rem; }
+  
+  .feature-list { margin-top: 2rem; }
+  .feature-item {
+    display: flex; align-items: center; gap: 1rem;
+    margin-bottom: 1rem; padding: 1rem;
+    background: #faf8f3; border-radius: 15px;
+    transition: all 0.3s;
+    border-left: 4px solid transparent;
+  }
+  .feature-item:hover { 
+    transform: translateX(15px) scale(1.02);
+    background: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-left-color: #ff6b6b;
+  }
+  .feature-check {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, #ff6b6b, #feca57);
+    color: white; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; flex-shrink: 0;
+    animation: spinCheck 3s linear infinite;
+    transition: animation-duration 0.3s;
+  }
+  .feature-item:hover .feature-check { 
+    animation-duration: 0.5s;
+    transform: scale(1.2);
+  }
+  @keyframes spinCheck {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* === GALERIE === */
+  .gallery { background: #faf8f3; }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+  .gallery-item {
+    height: 280px; border-radius: 25px;
+    position: relative; overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.4s;
+  }
+  .gallery-item:hover { 
+    transform: scale(1.05) rotate(2deg);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  }
+  .gallery-item:nth-child(1) { background: linear-gradient(135deg, #ff6b6b, #feca57); }
+  .gallery-item:nth-child(2) { background: linear-gradient(135deg, #48dbfb, #0abde3); }
+  .gallery-item:nth-child(3) { background: linear-gradient(135deg, #ff9ff3, #ee5a6f); }
+  .gallery-item:nth-child(4) { background: linear-gradient(135deg, #5f27cd, #341f97); }
+  .gallery-item:nth-child(5) { background: linear-gradient(135deg, #feca57, #ff9f43); }
+  .gallery-item:nth-child(6) { background: linear-gradient(135deg, #1dd1a1, #54a0ff); }
+  .gallery-item .label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.7); color: white;
+    padding: 1.2rem; font-family: 'Caveat', cursive;
+    font-size: 1.5rem; backdrop-filter: blur(10px);
+    transform: translateY(100%);
+    transition: transform 0.4s;
+  }
+  .gallery-item:hover .label { transform: translateY(0); }
+  
+  /* === TÉMOIGNAGES === */
+  .testimonials { background: white; }
+  .testimonials-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  .testimonial {
+    background: #faf8f3; padding: 2.5rem;
+    border-radius: 25px; position: relative;
+    transition: all 0.4s;
+  }
+  .testimonial:hover { 
+    transform: rotate(-2deg) translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  }
+  .testimonial::before {
+    content: '"'; position: absolute;
+    top: -20px; left: 20px;
+    font-size: 8rem; font-family: 'Caveat', cursive;
+    color: #ff6b6b; opacity: 0.3; line-height: 1;
+    animation: quoteFloat 3s ease-in-out infinite;
+  }
+  @keyframes quoteFloat {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    50% { transform: translateY(-10px) rotate(-5deg); }
+  }
+  .testimonial .stars { 
+    color: #feca57; font-size: 1.3rem; margin-bottom: 1rem;
+    display: inline-block;
+  }
+  .testimonial .stars { animation: starTwinkle 2s ease-in-out infinite; }
+  @keyframes starTwinkle {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.1); filter: brightness(1.3); }
+  }
+  .testimonial p { font-style: italic; color: #555; margin-bottom: 1.5rem; }
+  .testimonial-author { font-weight: 600; color: #2c2c2c; }
+  
+  /* === CONTACT === */
+  .contact {
+    background: #2c2c2c; color: white;
+    position: relative; overflow: hidden;
+  }
+  .contact::before {
+    content: ''; position: absolute;
+    top: -50%; right: -20%; width: 600px; height: 600px;
+    background: radial-gradient(circle, #ff6b6b, transparent);
+    opacity: 0.3; border-radius: 50%;
+    animation: float 15s infinite ease-in-out;
+  }
+  .contact::after {
+    content: ''; position: absolute;
+    bottom: -50%; left: -20%; width: 500px; height: 500px;
+    background: radial-gradient(circle, #48dbfb, transparent);
+    opacity: 0.3; border-radius: 50%;
+    animation: float 18s infinite ease-in-out reverse;
+  }
+  .contact .section-title { color: white; position: relative; z-index: 1; }
+  .contact .section-subtitle { color: #ccc; }
+  
+  .contact-content {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 4rem; position: relative; z-index: 1;
+  }
+  .contact-info { display: flex; flex-direction: column; gap: 1.5rem; }
+  .contact-item {
+    display: flex; align-items: center; gap: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s;
+  }
+  .contact-item:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateX(15px) scale(1.02);
+    border-color: #feca57;
+  }
+  .contact-icon {
+    width: 55px; height: 55px;
+    background: linear-gradient(135deg, #ff6b6b, #feca57);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; flex-shrink: 0;
+    animation: iconSpin 4s linear infinite;
+    transition: animation-duration 0.3s;
+  }
+  .contact-item:hover .contact-icon {
+    animation-duration: 1s;
+    transform: scale(1.2);
+  }
+  @keyframes iconSpin {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+  }
+  .contact-item strong { display: block; margin-bottom: 0.3rem; }
+  .contact-item a { color: #feca57; text-decoration: none; font-weight: 500; }
+  
+  form {
+    background: white; color: #2c2c2c;
+    padding: 2.5rem; border-radius: 25px;
+    display: flex; flex-direction: column; gap: 1rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    transition: transform 0.3s;
+  }
+  form:hover { transform: translateY(-5px); }
+  form h3 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+  input, textarea {
+    padding: 1rem 1.2rem;
+    border: 2px solid #f0e6d2;
+    border-radius: 15px; font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    background: #faf8f3; transition: all 0.3s;
+  }
+  input:focus, textarea:focus {
+    border-color: #ff6b6b;
+    background: white; outline: none;
+    transform: scale(1.02);
+    box-shadow: 0 5px 20px rgba(255,107,107,0.2);
+  }
+  textarea { resize: vertical; min-height: 120px; }
+  form .btn-art.primary { width: 100%; text-align: center; }
+  
+  /* === FOOTER === */
+  footer {
+    background: #1a1a1a; color: white;
+    text-align: center; padding: 2.5rem;
+  }
+  .footer-logo {
+    font-family: 'Caveat', cursive;
+    font-size: 2.5rem; margin-bottom: 0.5rem;
+  }
+  .footer-logo span { color: #feca57; }
+  footer p { opacity: 0.7; }
+  
+  /* === BOUTON SCROLL TOP === */
+  .scroll-top {
+    position: fixed; bottom: 30px; right: 30px;
+    width: 55px; height: 55px;
+    background: linear-gradient(135deg, #ff6b6b, #feca57);
+    color: white; border: none;
+    border-radius: 50%; font-size: 1.5rem;
+    cursor: pointer; z-index: 999;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    opacity: 0; transform: translateY(100px);
+    transition: all 0.3s;
+    animation: pulseScroll 2s infinite;
+  }
+  .scroll-top.show {
+    opacity: 1; transform: translateY(0);
+  }
+  .scroll-top:hover { 
+    transform: translateY(-5px) scale(1.1) rotate(360deg);
+    transition: transform 0.5s;
+  }
+  @keyframes pulseScroll {
+    0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(255, 107, 107, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+  }
+  
+  /* === EFFET SPLASH AU CLIC === */
+  .splash {
+    position: fixed; pointer-events: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: splashAnim 0.8s ease-out forwards;
+    z-index: 9998;
+  }
+  @keyframes splashAnim {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(8); opacity: 0; }
+  }
+  
+  /* === RESPONSIVE === */
+  @media (max-width: 768px) {
+    .nav-links {
+      display: none; position: absolute; top: 100%;
+      left: 0; width: 100%; background: #faf8f3;
+      flex-direction: column; padding: 1.5rem;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    .nav-links.active { display: flex; }
+    .menu-toggle { display: block; }
+    .hero h1 { font-size: 3.5rem; }
+    .section-title { font-size: 3rem; }
+    .about-content, .contact-content { grid-template-columns: 1fr; gap: 2rem; }
+    .about-visual { height: 300px; }
+    body { cursor: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="paint-particles" id="particles"></div>
+
+<header>
+  <nav>
+    <div class="logo">Adfn <span class="brush">🖌️</span> Peinture</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#accueil">Accueil</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#apropos">À propos</a></li>
+      <li><a href="#realisations">Œuvres</a></li>
+      <li><a href="#avis">Avis</a></li>
+      <li><a href="tel:0681428088" class="btn-paint">📞 Appeler</a></li>
+    </ul>
+    <button class="menu-toggle" onclick="document.getElementById('navLinks').classList.toggle('active')">☰</button>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="accueil">
+  <div class="paint-blob blob1"></div>
+  <div class="paint-blob blob2"></div>
+  <div class="paint-blob blob3"></div>
+  <div class="paint-blob blob4"></div>
+  
+  <div class="hero-content">
+    <h1>L'art de <span class="highlight">peindre</span><br>vos murs</h1>
+    <p class="subtitle">Adfn Peinture • Vourles • Artisanat passionné depuis toujours</p>
+    
+    <div class="hero-info">
+      <div class="info-card">
+        <span class="icon">⭐</span>
+        <div class="text"><strong>5.0/5</strong>Note parfaite</div>
+      </div>
+      <div class="info-card">
+        <span class="icon">📍</span>
+        <div class="text"><strong>Vourles</strong>69390</div>
+      </div>
+      <div class="card">
+        <span class="icon">🎨</span>
+        <div class="text"><strong>Artisan</strong>Qualifié</div>
+      </div>
+    </div>
+    
+    <div class="hero-buttons">
+      <a href="tel:0681428088" class="btn-art primary">
+        <span>📞 06 81 42 80 88</span>
+      </a>
+      <a href="#contact" class="btn-art outline">Devis artistique gratuit</a>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="container">
+    <h2 class="section-title">Nos <span class="accent">créations</span></h2>
+    <p class="section-subtitle">Chaque mur raconte une histoire, écrivons la vôtre</p>
+    
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-emoji">🏠</div>
+        <h3>Intérieur</h3>
+        <p>Salons, chambres, cuisines... des ambiances uniques pour chaque pièce de votre foyer.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-emoji">🏢</div>
+        <h3>Extérieur</h3>
+        <p>Façades, volets, portails. Une protection artistique qui dure dans le temps.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-emoji">🎨</div>
+        <h3>Décoration</h3>
+        <p>Enduits, effets, fresques. Transformez vos murs en véritables œuvres d'art.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-emoji">✨</div>
+        <h3>Rénovation</h3>
+        <p>Donnez une seconde vie à votre habitat avec des techniques modernes.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-emoji">🖌️</div>
+        <h3>Préparation</h3>
+        <p>Le secret d'un résultat parfait réside dans une préparation minutieuse.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-emoji">💡</div>
+        <h3>Conseil</h3>
+        <p>Accompagnement personnalisé dans le choix des couleurs et des matières.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COLOR PICKER -->
+<section class="color-section">
+  <div class="container">
+    <h2 class="section-title">La <span class="accent">couleur</span>, c'est la vie</h2>
+    <div class="color-wheel" onclick="this.style.animationPlayState='paused'"></div>
+    <p class="color-quote">Une couleur bien choisie peut transformer une maison en foyer</p>
+  </div>
+</section>
+
+<!-- À PROPOS -->
+<section class="about" id="apropos">
+  <div class="container">
+    <div class="about-content">
+      <div class="about-visual">
+        <div class="paint-canvas"></div>
+      </div>
+      <div class="about-text">
+        <h2>Une <span>passion</span>,<br>un métier</h2>
+        <p>Basé à <strong>Vourles</strong>, <strong>Adfn Peinture</strong> transforme vos espaces avec passion et savoir-faire artisanal.</p>
+        <p>Chaque projet est unique, chaque mur a son histoire. Nous mettons notre créativité au service de vos envies pour créer des ambiances qui vous ressemblent.</p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <div class="feature-check">✓</div>
+            <div>Travail artisanal soigné et personnalisé</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-check">✓</div>
+            <div>Devis gratuit et conseils artistiques</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-check">✓</div>
+            <div>Respect des délais et de votre intérieur</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-check">✓</div>
+            <div>Matériaux de qualité professionnelle</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALERIE -->
+<section class="gallery" id="realisations">
+  <div class="container">
+    <h2 class="section-title">Nos <span class="accent">œuvres</span></h2>
+    <p class="section-subtitle">Des réalisations uniques pour des clients uniques</p>
+    
+    <div class="gallery-grid">
+      <div class="gallery-item"><div class="label">Salon moderne</div></div>
+      <div class="gallery-item"><div class="label">Façade rénovée</div></div>
+      <div class="gallery-item"><div class="label">Chambre cosy</div></div>
+      <div class="gallery-item"><div class="label">Couloir artistique</div></div>
+      <div class="gallery-item"><div class="label">Cuisine chaleureuse</div></div>
+      <div class="gallery-item"><div class="label">Volets restaurés</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TÉMOIGNAGES -->
+<section class="testimonials" id="avis">
+  <div class="container">
+    <h2 class="section-title">Ils nous <span class="accent">adorent</span></h2>
+    <p class="section-subtitle">⭐ 5.0/5 sur Google - La satisfaction de nos clients</p>
+    
+    <div class="testimonials-grid">
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p>"Travail absolument remarquable ! Adfn Peinture a su donner vie à notre projet. Professionnel, à l'écoute et d'une grande créativité. Nous recommandons les yeux fermés !"</p>
+        <div class="testimonial-author">— Famille Martin, Vourles</div>
+      </div>
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p>"Une vraie pépite ! La rénovation de notre façade est splendide. Équipe sérieuse, conseils avisés et résultat au-delà de nos espérances. Merci !"</p>
+        <div class="testimonial-author">— M. et Mme Dubois</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="container">
+    <h2 class="section-title">Créons <span class="accent">ensemble</span></h2>
+    <p class="section-subtitle">Votre projet artistique commence ici</p>
+    
+    <div class="contact-content">
+      <div class="contact-info">
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <div>
+            <strong>Adresse</strong>
+            33 Rue des Vallières<br>69390 Vourles
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📞</div>
+          <div>
+            <strong>Téléphone</strong>
+            <a href="tel:0681428088">06 81 42 80 88</a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">🕐</div>
+          <div>
+            <strong>Horaires</strong>
+            Lun-Ven : 8h-12h / 14h-18h
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">🎨</div>
+          <div>
+            <strong>Zone</strong>
+            Vourles et environs
+          </div>
+        </div>
+      </div>
+      
+      <form action="https://formspree.io/f/VOTRE_ID" method="POST">
+        <h3>Devis gratuit</h3>
+        <input type="text" name="nom" placeholder="Votre nom" required>
+        <input type="tel" name="telephone" placeholder="Votre téléphone" required>
+        <input type="email" name="email" placeholder="Votre email">
+        <input type="text" name="projet" placeholder="Type de projet">
+        <textarea name="message" placeholder="Décrivez votre projet artistique..." required></textarea>
+        <button type="submit" class="btn-art primary"><span>Envoyer ma demande ✨</span></button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Adfn <span>Peinture</span></div>
+  <p>Artisan peintre à Vourles • 06 81 42 80 88 • L'art au service de vos murs</p>
+</footer>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0, behavior:'smooth'})">🎨</button>
+
+<script>
+  // === PARTICULES DE PEINTURE ===
+  function createParticles() {
+    const container = document.getElementById('particles');
+    const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff'];
+    for (let i = 0; i < 15; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      const size = Math.random() * 15 + 5;
+      particle.style.width = size + 'px';
+      particle.style.height = size + 'px';
+      particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+      particle.style.animationDelay = Math.random() * 10 + 's';
+      container.appendChild(particle);
+    }
+  }
+  createParticles();
+  
+  // === SPLASH AU CLIC ===
+  const splashColors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd'];
+  document.addEventListener('click', (e) => {
+    const splash = document.createElement('div');
+    splash.className = 'splash';
+    splash.style.left = e.clientX + 'px';
+    splash.style.top = e.clientY + 'px';
+    splash.style.background = splashColors[Math.floor(Math.random() * splashColors.length)];
+    document.body.appendChild(splash);
+    setTimeout(() => splash.remove(), 800);
+  });
+  
+  // === TRAÎNÉE DE PEINTURE À LA SOURIS ===
+  let lastTime = 0;
+  document.addEventListener('mousemove', (e) => {
+    const now = Date.now();
+    if (now - lastTime < 50) return;
+    lastTime = now;
+    const dot = document.createElement('div');
+    dot.style.position = 'fixed';
+    dot.style.left = e.clientX + 'px';
+    dot.style.top = e.clientY + 'px';
+    dot.style.width = '8px';
+    dot.style.height = '8px';
+    dot.style.borderRadius = '50%';
+    dot.style.background = splashColors[Math.floor(Math.random() * splashColors.length)];
+    dot.style.pointerEvents = 'none';
+    dot.style.zIndex = '9997';
+    dot.style.transition = 'all 1s ease-out';
+    dot.style.opacity = '0.6';
+    document.body.appendChild(dot);
+    setTimeout(() => {
+      dot.style.opacity = '0';
+      dot.style.transform = `translateY(30px) scale(0)`;
+    }, 50);
+    setTimeout(() => dot.remove(), 1100);
+  });
+  
+  // === BOUTON SCROLL TOP ===
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('scrollTop');
+    if (window.scrollY > 300) {
+      btn.classList.add('show');
+    } else {
+      btn.classList.remove('show');
+    }
+  });
+  
+  // === NAVIGATION SMOOTH ===
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('navLinks').classList.remove('active');
+      }
+    });
+  });
+  
+  // === ANIMATION AU SCROLL ===
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }, i * 100);
+      }
+    });
+  }, { threshold: 0.1 });
+  
+  document.querySelectorAll('.service-card, .gallery-item, .testimonial, .feature-item, .contact-item').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(40px)';
+    el.style.transition = 'all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>
